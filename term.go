@@ -60,6 +60,7 @@ func (f *colorFlow) Printf(format string, args []interface{}, colors ...Color) I
 	f.doColors(colors...)
 	fmt.Fprintf(f.writer, format, args...)
 	fmt.Fprint(f.writer, clear)
+	return f
 }
 
 func (f *colorFlow) doColors(colors ...Color) {
