@@ -1,8 +1,13 @@
 package fmtc
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/jucardi/go-streams/streams"
 	"github.com/jucardi/go-strings/stringx"
+	"io"
+	"strconv"
+	"strings"
 )
 
 type Color int
@@ -113,4 +118,32 @@ func Parse(color string) (Color, error) {
 
 	var l Color
 	return l, fmt.Errorf("not a valid color: %q", color)
+}
+
+func doColors(colors []Color, w ...io.Writer) {
+	joinedColors := strings.Join(
+		streams.From(colors).
+			Map(colorToStr).
+			ToArray().([]string),
+		";",
+	)
+
+	if len(w) > 0 && w[0] != nil {
+		fmt.Fprint(w[0], esc, joinedColors, "m")
+	} else {
+		fmt.Print(esc, joinedColors, "m")
+	}
+}
+
+func getColors(colors []Color) string {
+	b := &bytes.Buffer{}
+	doColors(colors, b)
+	return b.String()
+}
+
+func wrapColors(colors []Color, str string) string {
+	return getColors(colors) + str + clear
+}
+func colorToStr(i interface{}) interface{} {
+	return strconv.Itoa(int(i.(Color)))
 }

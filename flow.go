@@ -15,12 +15,16 @@ type IColorFlow interface {
 	String() string
 	Print(str interface{}, colors ... Color) IColorFlow
 	PrintLn(str interface{}, colors ... Color) IColorFlow
+	Printf(format string, args Args, colors ...Color) IColorFlow
 }
 
 type colorFlow struct {
 	customWriter bool
 	writer       io.Writer
 }
+
+// Args is an alias of []interface{}
+type Args []interface{}
 
 func New(writer ...io.Writer) IColorFlow {
 	ret := &colorFlow{}
@@ -35,6 +39,22 @@ func New(writer ...io.Writer) IColorFlow {
 	return ret
 }
 
+func Fprint(w io.Writer, str interface{}, colors ... Color) {
+	doColors(colors, w)
+	fmt.Fprint(w, str, clear)
+}
+
+func Fprintln(w io.Writer, str interface{}, colors ... Color) {
+	doColors(colors, w)
+	fmt.Fprintln(w, str, clear)
+}
+
+func Fprintf(w io.Writer, format string, args Args, colors ...Color) {
+	doColors(colors, w)
+	fmt.Fprintf(w, format, args...)
+	fmt.Fprint(w, clear)
+}
+
 func (f *colorFlow) String() string {
 	if f.customWriter {
 		return ""
@@ -44,27 +64,16 @@ func (f *colorFlow) String() string {
 }
 
 func (f *colorFlow) Print(str interface{}, colors ... Color) IColorFlow {
-	f.doColors(colors...)
-	fmt.Fprint(f.writer, str, clear)
-
+	Fprint(f.writer, str, colors...)
 	return f
 }
 
 func (f *colorFlow) PrintLn(str interface{}, colors ... Color) IColorFlow {
-	f.doColors(colors...)
-	fmt.Fprintln(f.writer, str, clear)
+	Fprintln(f.writer, str, colors...)
 	return f
 }
 
-func (f *colorFlow) Printf(format string, args []interface{}, colors ...Color) IColorFlow {
-	f.doColors(colors...)
-	fmt.Fprintf(f.writer, format, args...)
-	fmt.Fprint(f.writer, clear)
+func (f *colorFlow) Printf(format string, args Args, colors ...Color) IColorFlow {
+	Fprintf(f.writer, format, args, colors...)
 	return f
-}
-
-func (f *colorFlow) doColors(colors ...Color) {
-	for _, c := range colors {
-		fmt.Fprint(f.writer, esc, c, "m")
-	}
 }
