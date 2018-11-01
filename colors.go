@@ -3,11 +3,12 @@ package fmtc
 import (
 	"bytes"
 	"fmt"
-	"github.com/jucardi/go-streams/streams"
-	"github.com/jucardi/go-strings/stringx"
 	"io"
 	"strconv"
 	"strings"
+
+	"gopkg.in/jucardi/go-streams.v1/streams"
+	"gopkg.in/jucardi/go-strings.v1/stringx"
 )
 
 type Color int
@@ -111,6 +112,7 @@ var colorMap = map[string]Color{
 	"bgwhite":        BgWhite,
 }
 
+// Parse attempts to parse a string representing a predefined color.
 func Parse(color string) (Color, error) {
 	if v, ok := colorMap[stringx.New(color).ToLower().TrimSpace().S()]; ok {
 		return v, nil
@@ -144,6 +146,7 @@ func getColors(colors []Color) string {
 func wrapColors(colors []Color, str string) string {
 	return getColors(colors) + str + clear
 }
+
 func colorToStr(i interface{}) interface{} {
 	return strconv.Itoa(int(i.(Color)))
 }
