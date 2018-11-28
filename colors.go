@@ -123,12 +123,15 @@ func Parse(color string) (Color, error) {
 }
 
 func doColors(colors []Color, w ...io.Writer) {
-	joinedColors := strings.Join(
-		streams.From(colors).
-			Map(colorToStr).
-			ToArray().([]string),
-		";",
-	)
+	joinedColors := ""
+	if len(colors) > 0 {
+		joinedColors = 		strings.Join(
+			streams.From(colors).
+				Map(colorToStr).
+				ToArray().([]string),
+			";",
+		)
+	}
 
 	if len(w) > 0 && w[0] != nil {
 		fmt.Fprint(w[0], esc, joinedColors, "m")
