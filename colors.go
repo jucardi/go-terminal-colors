@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"gopkg.in/jucardi/go-streams.v1/streams"
-	"gopkg.in/jucardi/go-strings.v1/stringx"
+	"github.com/jucardi/go-streams/streams"
+	"github.com/jucardi/go-strings/stringx"
 )
 
 type Color int
@@ -125,7 +125,7 @@ func Parse(color string) (Color, error) {
 func doColors(colors []Color, w ...io.Writer) {
 	joinedColors := ""
 	if len(colors) > 0 {
-		joinedColors = 		strings.Join(
+		joinedColors = strings.Join(
 			streams.From(colors).
 				Map(colorToStr).
 				ToArray().([]string),
